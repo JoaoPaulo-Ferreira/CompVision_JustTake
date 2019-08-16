@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 import cv2
 import numpy as np
 import time
 from random import randint
 import features
 old_frame=0
-cap=cv2.VideoCapture(1)
+cap=cv2.VideoCapture(0)
 w=cap.get(3)
 h=cap.get(4)
 frameArea=h*w
@@ -62,7 +63,7 @@ while(cap.isOpened()):
         mask=cv2.morphologyEx(imBin,cv2.MORPH_CLOSE,kernalCl)
         
         #Find Contours
-        _, contours0,hierarchy=cv2.findContours(mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
+        contours0,hierarchy=cv2.findContours(mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
         if len(contours0) != 0:
             cnt = max(contours0, key = cv2.contourArea) # Area Max
             area=cv2.contourArea(cnt)
@@ -79,7 +80,7 @@ while(cap.isOpened()):
                 if y+h > up_limit:
                     if insertingFlag == True:
                         p=features.try_match(frame)
-                        cv2.imshow("match",p.matching_Compute())
+                        # cv2.imshow("match",p.matching_Compute())
                         if old_y+old_h > line_up and y+h <= line_up:
                             insertingFlag=False
                     elif insertingFlag == False:   
@@ -107,15 +108,10 @@ while(cap.isOpened()):
         frame=cv2.polylines(frame,[pts_L3],False,(255,255,255),thickness=1)
         cv2.putText(frame, status, (10, 90), font, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
         cv2.imshow('Frame',frame)
-
         # TESTE SUBTRAÇÃO
         # sub = (frame - old_frame)
         # old_frame = frame
         # cv2.imshow('Subtracao Simples', sub)
-        
-        
-
-
     if cv2.waitKey(1)&0xff==ord('q'):
         break
 cap.release()
